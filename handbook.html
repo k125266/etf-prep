@@ -117,7 +117,10 @@ details.chap[open] .no{background:linear-gradient(135deg,var(--thbg) 30%,#3D6EA5
 @keyframes starshine{to{background-position:-200% 0}}
 
 
-/* ===== Responsive: tablet & desktop ===== */
+/* desktop-only sidebar; hidden on phone */
+.sidenav{display:none}
+
+/* ===== Responsive: tablet ===== */
 @media (min-width:768px){
   body{font-size:18px}
   .wrap{max-width:940px;padding:0 28px}
@@ -132,15 +135,41 @@ details.chap[open] .no{background:linear-gradient(135deg,var(--thbg) 30%,#3D6EA5
   .fig svg{max-width:720px;margin:0 auto;display:block}
   .figscroll{display:flex;justify-content:center}
 }
-@media (min-width:1080px){
-  .wrap{max-width:1160px}
-  /* Q&A two-up on wide screens; prose & figures span full width */
+
+/* ===== Desktop: documentation app shell with left sidebar ===== */
+@media (min-width:1100px){
+  body{padding-left:276px}
+  #prog{left:276px}
+
+  .sidenav{display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;width:276px;z-index:60;
+    background:var(--panel);border-right:1px solid var(--line);box-shadow:1px 0 0 var(--line);overflow:hidden}
+  html[data-theme=dark] .sidenav{background:#0C1C2E}
+  .sidenav .sbrand{padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+  .sidenav .sbrand .ttl{font-family:var(--serif);font-weight:900;font-size:18px;color:var(--navy);line-height:1.3}
+  .sidenav .sbrand .ed{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-top:4px}
+  .sidenav .slist{flex:1;overflow-y:auto;padding:12px 12px 24px}
+  .sidenav a{display:flex;align-items:baseline;gap:9px;text-decoration:none;padding:8px 12px;border-radius:9px;
+    color:var(--ink);font-size:14px;line-height:1.4;transition:background .15s,color .15s;border-left:2px solid transparent}
+  .sidenav a .sno{font-family:var(--serif);font-weight:700;font-size:11px;color:var(--gray);white-space:nowrap;min-width:34px}
+  .sidenav a:hover{background:var(--tint)}
+  .sidenav a.on{background:var(--tint);color:var(--navy);font-weight:700;border-left-color:var(--gold)}
+  .sidenav a.on .sno{color:var(--gold)}
+  .sidenav .sfoot{padding:14px 18px;border-top:1px solid var(--line);font-size:12.5px}
+  .sidenav .sfoot a{display:inline;padding:0;color:var(--blue);font-weight:700}
+
+  .wrap{max-width:1040px;padding:0 40px}
+  header{padding:30px 0 12px}
+  /* the mobile ticker/sparkline belong to the phone hero; sidebar replaces that role */
+  header .ticker,header #pulse{display:none}
+  main.wrap{padding-top:6px;padding-bottom:30px}
+
+  details.chap{scroll-margin-top:18px}
   #c7 .body,#c8 .body{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;align-items:start}
   #c7 .body > p,#c8 .body > p,#c7 .body > .fig,#c8 .body > .fig{grid-column:1/-1}
   .qa{margin:14px 0}
 }
-@media (min-width:1320px){
-  .wrap{max-width:1320px}
+@media (min-width:1500px){
+  .wrap{max-width:1140px}
   .fig svg{max-width:820px}
 }
 
@@ -166,6 +195,27 @@ html[data-theme=dark] .mast .shine{background:linear-gradient(105deg,transparent
 </style>
 </head>
 <body>
+<aside class="sidenav" aria-label="章節導覽">
+  <div class="sbrand">
+    <div class="ttl">ETF Platform VP<br>面試備戰手冊</div>
+    <div class="ed">Interview Handbook</div>
+  </div>
+  <nav class="slist">
+    <a href="#pre"><span class="sno">前言</span>用 TPM 的腦袋讀懂 ETF</a>
+    <a href="#c1"><span class="sno">一</span>ETF 基礎與生態系</a>
+    <a href="#c2"><span class="sno">二</span>Creation / Redemption</a>
+    <a href="#c3"><span class="sno">三</span>初級／次級市場與 CapM</a>
+    <a href="#c4"><span class="sno">四</span>關鍵指標</a>
+    <a href="#c5"><span class="sno">五</span>發行與上市流程</a>
+    <a href="#c6"><span class="sno">六</span>營運模型與治理</a>
+    <a href="#sp"><span class="sno">特別</span>主動式 ETF：你的主場</a>
+    <a href="#c7"><span class="sno">七</span>知識題（13 題）</a>
+    <a href="#c8"><span class="sno">八</span>行為與情境題（8 題）</a>
+    <a href="#c9"><span class="sno">九</span>差異化策略與反問</a>
+    <a href="#gl"><span class="sno">附錄</span>名詞速查表</a>
+  </nav>
+  <div class="sfoot">入門先看 <a href="index.html">《ETF 小白圖解入門》</a></div>
+</aside>
 <header>
   <div class="wrap">
     <div class="mast">
@@ -363,6 +413,31 @@ html[data-theme=dark] .mast .shine{background:linear-gradient(105deg,transparent
       io.disconnect();
     }
   }, 1500);
+})();
+
+/* sidebar nav: open the chapter you jump to + scrollspy highlight */
+(function(){
+  var links = [].slice.call(document.querySelectorAll('.sidenav a[href^="#"]'));
+  if(!links.length) return;
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1); map[id] = a;
+    a.addEventListener('click', function(){
+      var d = document.getElementById(id);
+      if(d && d.tagName === 'DETAILS') d.open = true;
+    });
+  });
+  if('IntersectionObserver' in window){
+    var spy = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('on'); });
+          var a = map[e.target.id]; if(a) a.classList.add('on');
+        }
+      });
+    }, {rootMargin:'-12% 0px -80% 0px'});
+    Object.keys(map).forEach(function(id){ var d=document.getElementById(id); if(d) spy.observe(d); });
+  }
 })();
 </script>
 </body>

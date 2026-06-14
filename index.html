@@ -183,7 +183,10 @@ footer .seal{font-family:var(--serif);font-weight:700;color:var(--ink)}
 .gobtn:active{transform:scale(.96)}
 html[data-theme=dark] .gobtn{background:var(--card);color:var(--gold)}
 
-/* ===== Responsive: tablet & desktop ===== */
+/* desktop-only chrome hidden on phone */
+.legend .brand,.legend .toc{display:none}
+
+/* ===== Responsive: tablet ===== */
 @media (min-width:768px){
   body{font-size:17px}
   .wrap{max-width:920px}
@@ -191,18 +194,41 @@ html[data-theme=dark] .gobtn{background:var(--card);color:var(--gold)}
   .canvas{padding:28px 26px}
   .roles{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 }
-@media (min-width:1080px){
-  .wrap{max-width:1140px;padding:0 32px}
-  section{padding:52px 0 10px}
-  h2{font-size:clamp(26px,3vw,32px)}
-  .lede{font-size:17px;max-width:42em}
-  /* the four-layer ecosystem map gets more breathing room */
-  .roles{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
-  /* node diagrams scale up but stay centered */
-  .canvas{max-width:820px;margin-left:auto;margin-right:auto}
+
+/* ===== Desktop: editorial field-guide (totally different from phone) ===== */
+@media (min-width:1100px){
+  .wrap{max-width:1240px;padding:0 40px}
+
+  /* the sticky legend becomes a real top app bar */
+  .legend{padding:0;box-shadow:0 1px 0 var(--line)}
+  .legend .wrap{min-height:62px;display:flex;align-items:center;gap:0 24px;flex-wrap:nowrap}
+  .legend .brand{display:flex;flex-direction:column;justify-content:center;line-height:1.15;padding-right:22px;margin-right:2px;border-right:1px solid var(--line);text-decoration:none}
+  .legend .brand b{font-family:var(--serif);font-weight:900;font-size:16px;color:var(--royal)}
+  .legend .brand i{font-family:var(--mono);font-style:normal;font-size:9.5px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-top:2px}
+  .legend .toc{display:flex;gap:2px}
+  .legend .toc a{font-size:13.5px;font-weight:500;color:var(--soft);text-decoration:none;padding:7px 12px;border-radius:8px;transition:background .15s,color .15s}
+  .legend .toc a:hover{background:var(--tint);color:var(--royal)}
+  .legend .toc a.on{color:var(--royal);background:var(--tint);font-weight:700}
+  .legend .lab{margin-left:auto}
+
+  /* editorial two-column sections: sticky heading rail + figure */
+  section{padding:64px 0 18px;display:grid;grid-template-columns:300px minmax(0,1fr);column-gap:60px;align-items:start;border-bottom:1px solid var(--line)}
+  main.wrap > section:last-of-type{border-bottom:0}
+  .sec-head{position:sticky;top:88px}
+  .fig-no{font-size:13px;margin-bottom:10px}
+  h2{font-size:30px;line-height:1.25;margin-bottom:14px}
+  .lede{font-size:16px;max-width:none;margin-bottom:0;color:var(--soft)}
+  .sec-body{min-width:0}
+  .sec-body > :first-child{margin-top:0}
+
+  .canvas{max-width:none}
+  .roles{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  /* the ecosystem map (fig4) earns extra columns of breathing room */
+  #fig4 .roles{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 }
-@media (min-width:1320px){
+@media (min-width:1440px){
   .wrap{max-width:1320px}
+  section{grid-template-columns:330px minmax(0,1fr);column-gap:76px}
 }
 
 /* ===== FinTech motion layer ===== */
@@ -246,7 +272,7 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
 
 </style>
 </head>
-<body>
+<body id="top">
 
 <header>
   <div class="wrap">
@@ -263,8 +289,16 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
 <div id="prog"></div>
 <button id="mode" aria-label="切換日夜模式">◐</button>
 
-<nav class="legend" aria-label="圖例">
+<nav class="legend" aria-label="圖例與導覽">
   <div class="wrap">
+    <a class="brand" href="#top"><b>ETF 圖解入門</b><i>Field Guide</i></a>
+    <span class="toc">
+      <a href="#fig1">三種公司</a>
+      <a href="#fig2">怎麼買</a>
+      <a href="#fig3">誰做的</a>
+      <a href="#fig4">生態系</a>
+      <a href="#chips">名詞卡</a>
+    </span>
     <span class="lab">圖例 LEGEND</span>
     <span class="key money"><span class="swatch"></span>錢的流向</span>
     <span class="key unit"><span class="swatch"></span>ETF 單位 / 商品</span>
@@ -276,9 +310,12 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
 
 <!-- ============ 圖1 ============ -->
 <section id="fig1">
+  <div class="sec-head">
   <div class="fig-no">圖 1</div>
   <h2>先分清楚三種公司</h2>
   <p class="lede">新聞裡的「投信」「券商」「銀行」常常被混著講，但它們的角色完全不同。用食品業類比一次記住：</p>
+  </div>
+  <div class="sec-body">
 
   <div class="trio">
     <div class="co">
@@ -317,13 +354,17 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
   </div>
 
   <div class="say"><b>白話一句：</b>投信「做」ETF，券商「賣」ETF（的交易服務），保管銀行「看管」ETF 裡面的資產。三者是分工，不是同一家公司的不同部門。</div>
+  </div>
 </section>
 
 <!-- ============ 圖2 ============ -->
 <section id="fig2">
+  <div class="sec-head">
   <div class="fig-no">圖 2</div>
   <h2>你買一張 ETF 時，發生了什麼事</h2>
   <p class="lede">從「客戶」的視角開始。注意：這整條路上<b>沒有投信</b>——日常買賣根本不會經過工廠。</p>
+  </div>
+  <div class="sec-body">
 
   <div class="canvas">
     <div class="node you"><div class="nm">客戶（你）</div><div class="sub">Investor</div><div class="meta">打開券商 App，按下「買進 0050 一張」</div></div>
@@ -341,13 +382,17 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
   </div>
 
   <div class="say"><b>白話一句：</b>你買 ETF 是跟「市場上的另一個人」買，不是跟投信買。就像你在超市買飲料，是超市賣你，不是飲料工廠賣你。</div>
+  </div>
 </section>
 
 <!-- ============ 圖3 ============ -->
 <section id="fig3">
+  <div class="sec-head">
   <div class="fig-no">圖 3</div>
   <h2>那 ETF 是誰「做」出來的？</h2>
   <p class="lede">回到工廠端。一檔 ETF 誕生需要三方合作，這條就是你未來要管的 launch pipeline：</p>
+  </div>
+  <div class="sec-body">
 
   <div class="canvas">
     <div class="node gov"><div class="nm">指數公司</div><div class="sub">Index Provider（如 MSCI、富時、台灣指數公司）</div><div class="meta">擁有「配方」：指數的編製規則與成分股名單</div></div>
@@ -360,13 +405,17 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
 
   <div class="say"><b>白話一句：</b>指數公司賣「食譜」，投信照食譜「開生產線」，金管會與交易所負責「核發營業執照和貨架」。</div>
   <div class="warn"><b>你公司的主場：</b>主動式 ETF 不照食譜——經理人（主廚）自由選股，所以誕生鏈<b>沒有「指數授權」這一站</b>。完整比較與台灣規則，見手冊特別篇。</div>
+  </div>
 </section>
 
 <!-- ============ 圖4 ============ -->
 <section id="fig4">
+  <div class="sec-head">
   <div class="fig-no">圖 4</div>
   <h2>完整生態系地圖（點角色卡看白話解釋）</h2>
   <p class="lede">把前三張圖合體，再加上你問的 <b>vendor</b>：投信不會什麼都自己做，會把專業工作外包給服務商——就像科技公司用雲端與 managed services。</p>
+  </div>
+  <div class="sec-body">
 
   <div class="canvas">
     <div class="layer">
@@ -406,12 +455,17 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
   </div>
 
   <div class="say"><b>白話一句：</b>「vendor」就是投信的外包商。投信像 product owner，把保管、會計、名冊、系統都交給專業服務商，自己專注在產品與治理——你的工作就是確保這整條供應鏈每天準時轉動。</div>
+  </div>
 </section>
 
 <!-- ============ 名詞卡 ============ -->
 <section id="chips">
+  <div class="sec-head">
   <div class="fig-no">速記</div>
   <h2>十秒名詞卡</h2>
+  <p class="lede">面試前掃一遍，把每個角色一句話講清楚。</p>
+  </div>
+  <div class="sec-body">
   <div class="chips">
     <span class="chip"><b>投信</b>＝做 ETF 的工廠</span>
     <span class="chip"><b>券商</b>＝下單通路（超市）</span>
@@ -429,6 +483,7 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
     <span class="chip"><b>主動式 ETF</b>＝主廚自由發揮的 ETF（你公司的主場）</span>
     <span class="chip"><b>Alpha</b>＝贏過基準的超額報酬</span>
     <span class="chip"><b>全透明</b>＝台灣主動式 ETF 每天攤開全部持股</span>
+  </div>
   </div>
 </section>
 
@@ -505,6 +560,22 @@ html[data-theme=dark] .co .ana{background:var(--paper)}
     var alive = secs.some(function(x){ return !x.classList.contains('pre'); });
     if(!alive){ secs.forEach(function(x){ x.classList.remove('pre'); }); io.disconnect(); }
   }, 1500);
+})();
+
+/* top-nav scrollspy (desktop) */
+(function(){
+  var links = [].slice.call(document.querySelectorAll('.legend .toc a'));
+  if(!links.length || !('IntersectionObserver' in window)) return;
+  var map = {}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  var spy = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){
+        links.forEach(function(l){ l.classList.remove('on'); });
+        var a = map[e.target.id]; if(a) a.classList.add('on');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  Object.keys(map).forEach(function(id){ var s=document.getElementById(id); if(s) spy.observe(s); });
 })();
 </script>
 </body>
