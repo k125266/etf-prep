@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<title>ETF 小白圖解入門｜角色關係完全看懂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2B3A;        /* 深藍墨：主文字 */
+  --royal:#14304A;      /* 海軍藍：標題與重點 */
+  --gold:#A87D2F;       /* 金：裝飾與點綴 */
+  --paper:#FAF7F0;      /* 象牙紙：背景 */
+  --money:#1E6B4F;      /* 深綠：錢的流向 */
+  --unit:#8C3A2B;       /* 酒紅：ETF 單位流向 */
+  --service:#8B8478;    /* 暖灰：服務/資訊關係 */
+  --line:#DDD5C4;
+  --card:#FFFFFF; --soft:var(--soft); --tint:#F1ECDF; --tint2:#F6EAE4;
+  --serif:'Noto Serif TC',serif;
+  --sans:'Noto Sans TC',-apple-system,sans-serif;
+  --mono:'SF Mono',ui-monospace,Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;color-scheme:light only;-webkit-text-size-adjust:100%}
+html,body{background:var(--paper) !important}
+body::before{content:"";position:fixed;inset:0;background:var(--paper);z-index:-1}
+header,main,footer,section{background:var(--paper)}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.75;font-size:16px}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+
+/* ---------- Masthead（年報風格） ---------- */
+header{background:var(--paper);padding:46px 0 30px}
+header .inner{border-top:3px double var(--ink);border-bottom:3px double var(--ink);padding:30px 4px 26px;position:relative}
+header .inner::before,header .inner::after{content:"";position:absolute;left:0;right:0;height:1px;background:var(--gold)}
+header .inner::before{top:5px}
+header .inner::after{bottom:5px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;text-align:center}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(28px,6.5vw,42px);line-height:1.3;color:var(--royal);text-align:center}
+h1 .lite{display:block;font-size:.62em;font-weight:700;color:var(--gold);margin-top:6px}
+.promise{margin:16px auto 0;font-size:15px;color:var(--soft);max-width:32em;text-align:center}
+
+/* ---------- Legend (signature) ---------- */
+.legend{position:sticky;top:0;z-index:50;background:var(--card);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);padding:10px 0}
+.legend .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.legend .lab{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--service)}
+.key{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.swatch{width:26px;height:0;border-top:3px solid}
+.key.money .swatch{border-color:var(--money)}
+.key.unit .swatch{border-color:var(--unit)}
+.key.svc .swatch{border-top-style:dashed;border-color:var(--service)}
+
+/* ---------- Sections ---------- */
+section{padding:44px 0 8px}
+.fig-no{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--gold);margin-bottom:6px}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(22px,5vw,28px);margin-bottom:10px}
+.lede{color:var(--soft);margin-bottom:22px;max-width:36em}
+.en{font-family:var(--mono);font-size:.85em;color:var(--royal);font-weight:600}
+
+/* ---------- Diagram canvas ---------- */
+.canvas{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 16px;margin-bottom:18px;
+  box-shadow:0 1px 3px rgba(14,34,64,.06)}
+.canvas .cap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--service);text-align:center;margin-top:14px}
+
+/* role node */
+.node{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:10px 12px;text-align:center;min-width:0}
+.node .nm{font-weight:700;font-size:15px}
+.node .sub{font-family:var(--mono);font-size:10.5px;color:var(--service);letter-spacing:.04em}
+.node .meta{font-size:12px;color:var(--soft);margin-top:2px}
+.node.you{border-color:var(--royal);background:#F3EDDC}
+.node.factory{border-color:var(--unit)}
+.node.gov{border-style:dashed;border-color:var(--service)}
+
+/* arrows */
+.arr{display:flex;flex-direction:column;align-items:center;padding:2px 0}
+.arr .stem{width:3px;height:22px;background:var(--ink)}
+.arr .head{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid var(--ink)}
+.arr .tag{font-size:12px;font-weight:500;margin:2px 0;padding:1px 8px;border-radius:99px;background:var(--paper)}
+.arr.money .stem{background:var(--money)}.arr.money .head{border-top-color:var(--money)}.arr.money .tag{color:var(--money)}
+.arr.unit .stem{background:var(--unit)}.arr.unit .head{border-top-color:var(--unit)}.arr.unit .tag{color:var(--unit)}
+.arr.svc .stem{background:repeating-linear-gradient(180deg,var(--service) 0 4px,transparent 4px 8px)}
+.arr.svc .head{border-top-color:var(--service)}.arr.svc .tag{color:var(--service)}
+.arr.up .stem{order:2}.arr.up .head{order:1;border-top:none;border-bottom:9px solid var(--ink)}
+.arr.up.unit .head{border-bottom-color:var(--unit)}.arr.up.money .head{border-bottom-color:var(--money)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;justify-items:center}
+
+/* takeaway */
+.say{background:var(--tint);border-left:5px solid var(--royal);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:10px;font-size:15px}
+.say b{color:var(--royal)}
+.warn{background:var(--tint2);border-left:5px solid var(--unit);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:10px;font-size:15px}
+.warn b{color:var(--unit)}
+
+/* ---------- 圖1 三公司卡片 ---------- */
+.trio{display:grid;gap:14px}
+@media(min-width:640px){.trio{grid-template-columns:repeat(3,1fr)}}
+.co{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;border-top:6px solid var(--royal)}
+.co.broker{border-top-color:var(--money)}
+.co.bank{border-top-color:var(--service)}
+.co .icon{font-family:var(--serif);font-size:26px;font-weight:900;color:var(--ink)}
+.co h3{font-family:var(--serif);font-size:19px;margin:4px 0 2px}
+.co .alias{font-family:var(--mono);font-size:11px;color:var(--service);margin-bottom:8px}
+.co .ana{font-size:14px;background:var(--paper);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.co .ana b{color:var(--royal)}
+.co ul{list-style:none;font-size:13.5px;color:var(--soft)}
+.co li{padding-left:14px;position:relative;margin-bottom:4px}
+.co li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--royal)}
+.co.broker li::before{background:var(--money)}
+.co.bank li::before{background:var(--service)}
+
+/* ---------- 互動角色卡（圖4） ---------- */
+.layer{margin-bottom:6px}
+.layer-tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--service);margin:14px 0 8px;display:flex;align-items:center;gap:10px}
+.layer-tag::after{content:"";flex:1;border-top:1px dashed var(--line)}
+.roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+details.role{background:var(--card);border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+details.role[open]{border-color:var(--royal);box-shadow:0 2px 8px rgba(20,48,74,.14)}
+details.role summary{cursor:pointer;list-style:none;padding:10px 12px;display:flex;flex-direction:column}
+details.role summary::-webkit-details-marker{display:none}
+details.role summary .nm{font-weight:700;font-size:14.5px}
+details.role summary .sub{font-family:var(--mono);font-size:10px;color:var(--service)}
+details.role summary .hint{font-size:11px;color:var(--royal);margin-top:3px}
+details.role[open] summary .hint{display:none}
+details.role .body{padding:0 12px 12px;font-size:13px;color:var(--soft);border-top:1px dashed var(--line);padding-top:8px}
+details.role .body b{color:var(--ink)}
+details.role:focus-within{outline:2px solid var(--royal);outline-offset:2px}
+
+/* ---------- 兩個市場（圖5） ---------- */
+.markets{display:grid;gap:14px}
+@media(min-width:640px){.markets{grid-template-columns:1fr 1fr}}
+.mkt{border-radius:14px;padding:18px 16px;border:1.5px solid var(--line);background:var(--card)}
+.mkt h3{font-family:var(--serif);font-size:18px;margin-bottom:2px}
+.mkt .alias{font-family:var(--mono);font-size:11px;color:var(--service);margin-bottom:10px}
+.mkt.secondary{border-color:var(--money)}
+.mkt.primary{border-color:var(--unit)}
+.mkt p{font-size:14px;color:var(--soft);margin-bottom:8px}
+.gate{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
+.mkt.secondary .gate{background:#E4EFE9;color:var(--money)}
+.mkt.primary .gate{background:#F3E3DD;color:var(--unit)}
+
+/* ---------- 步驟（圖6） ---------- */
+.steps{counter-reset:st;display:grid;gap:0}
+.step{display:grid;grid-template-columns:46px 1fr;gap:12px;position:relative;padding-bottom:20px}
+.step::before{counter-increment:st;content:counter(st);width:34px;height:34px;border-radius:50%;
+  background:var(--royal);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;z-index:1}
+.step::after{content:"";position:absolute;left:16px;top:36px;bottom:0;border-left:2px dashed var(--line)}
+.step:last-child::after{display:none}
+.step h4{font-size:15px;font-weight:700}
+.step h4 .when{font-family:var(--mono);font-size:11px;color:var(--unit);font-weight:600;margin-left:6px}
+.step p{font-size:13.5px;color:var(--soft)}
+
+/* ---------- 折溢價（圖7） ---------- */
+.gauge{position:relative;height:120px;margin:30px 8px 8px}
+.rail{position:absolute;left:0;right:0;top:56px;height:8px;border-radius:99px;
+  background:linear-gradient(90deg,var(--money),#DCE7E1 35%,#F2EEE3 50%,#EBDAD3 65%,var(--unit))}
+.tick{position:absolute;top:38px;width:2px;height:44px;background:var(--ink)}
+.tick.nav{left:50%}
+.tick .t-lab{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;white-space:nowrap;font-weight:700}
+.tick .t-sub{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--service);white-space:nowrap}
+.zone-lab{position:absolute;top:96px;font-size:12px;font-weight:700}
+.zone-lab.disc{left:2px;color:var(--money)}
+.zone-lab.prem{right:2px;color:var(--unit)}
+
+/* ---------- 你站在哪（圖8） ---------- */
+.pillars{display:grid;gap:12px}
+@media(min-width:640px){.pillars{grid-template-columns:repeat(3,1fr)}}
+.pillar{background:#fff;border:1px solid var(--line);border-left:6px solid var(--royal);border-radius:10px;padding:14px}
+.pillar h4{font-size:15px;font-family:var(--serif)}
+.pillar .where{font-family:var(--mono);font-size:11px;color:var(--royal);margin:2px 0 6px}
+.pillar p{font-size:13px;color:var(--soft)}
+
+/* ---------- 名詞卡 ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:13px}
+.chip b{color:var(--royal);font-family:var(--mono);font-size:12px}
+
+footer{padding:36px 0 60px;text-align:center;color:var(--service);font-size:13px}
+footer .seal{font-family:var(--serif);font-weight:700;color:var(--ink)}
+.gobtn{display:inline-block;font-family:var(--sans);font-weight:700;font-size:15px;color:#fff;background:var(--royal);text-decoration:none;padding:12px 22px;border-radius:99px;border:1px solid var(--gold);box-shadow:0 4px 14px rgba(20,48,74,.18);transition:transform .15s}
+.gobtn:active{transform:scale(.96)}
+html[data-theme=dark] .gobtn{background:var(--card);color:var(--gold)}
+
+/* ===== Responsive: tablet & desktop ===== */
+@media (min-width:768px){
+  body{font-size:17px}
+  .wrap{max-width:860px}
+  h1{font-size:clamp(34px,5vw,46px)}
+  .canvas{padding:28px 26px}
+  .roles{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+}
+@media (min-width:1080px){
+  .wrap{max-width:1000px;padding:0 32px}
+  section{padding:52px 0 10px}
+  h2{font-size:clamp(26px,3vw,32px)}
+  .lede{font-size:17px;max-width:42em}
+  /* the four-layer ecosystem map gets more breathing room */
+  .roles{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  /* node diagrams scale up but stay centered */
+  .canvas{max-width:820px;margin-left:auto;margin-right:auto}
+}
+@media (min-width:1320px){
+  .wrap{max-width:1120px}
+}
+
+/* ===== FinTech motion layer ===== */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),#D4AF5E);width:0;z-index:99}
+header .inner{overflow:hidden}
+header .shine{position:absolute;top:0;bottom:0;width:60px;background:linear-gradient(105deg,transparent,rgba(212,175,94,.35),transparent);transform:skewX(-18deg);animation:sweep 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{0%{left:-20%}55%,100%{left:120%}}
+.ticker{background:#0B1B2C;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);overflow:hidden}
+.ticker .track{display:flex;width:max-content;animation:marquee 36s linear infinite}
+.ticker span{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:#D8CBA8;padding:7px 0;white-space:nowrap}
+.ticker .up{color:#5BC489;font-weight:600}
+.ticker .sep{color:#46618A;padding:7px 10px}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+main section{transition:opacity .6s ease,transform .6s ease}
+main section.pre{opacity:0;transform:translateY(18px)}
+.live{width:8px;height:8px;border-radius:50%;background:#5BC489;margin-left:12px;flex:none;animation:blink 1.6s ease infinite;box-shadow:0 0 6px rgba(91,196,137,.8)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.ticker{display:flex;align-items:center}
+.ticker .track{padding-left:10px}
+/* money/units flow along the arrows */
+section:not(.pre) .arr.money .stem{background:repeating-linear-gradient(180deg,var(--money) 0 6px,#9CC4B2 6px 12px);background-size:100% 24px;animation:flow 1s linear infinite}
+section:not(.pre) .arr.unit .stem{background:repeating-linear-gradient(180deg,var(--unit) 0 6px,#D8B0A4 6px 12px);background-size:100% 24px;animation:flow 1s linear infinite}
+@keyframes flow{from{background-position:0 0}to{background-position:0 24px}}
+details.role summary{transition:transform .12s ease}
+details.role summary:active{transform:scale(.97)}
+
+/* ===== Night terminal theme ===== */
+html[data-theme=dark]{--ink:#D9E3EF;--royal:#A8C8EF;--gold:#D4AF5E;--paper:#0A1622;--card:#102338;--line:#28405C;--service:#94A7BD;--soft:#AFC0D6;--money:#43A87F;--unit:#C9705A;--tint:#16293F;--tint2:#33211F}
+html[data-theme=dark] header .shine{background:linear-gradient(105deg,transparent,rgba(212,175,94,.2),transparent)}
+html[data-theme=dark] .co .ana{background:var(--paper)}
+#mode{position:fixed;right:14px;bottom:18px;z-index:98;width:48px;height:48px;border-radius:50%;border:1.5px solid var(--gold);background:var(--card);color:var(--gold);font-size:19px;box-shadow:0 4px 16px rgba(0,0,0,.22);cursor:pointer;transition:transform .15s}
+#mode:active{transform:scale(.92) rotate(40deg)}
+#pulse{display:block;width:100%;height:64px;background:#0B1B2C;border-bottom:1px solid var(--gold)}
+.cursor{display:inline-block;color:var(--gold);animation:blink 1s steps(1) infinite;margin-left:1px}
+@media (prefers-reduced-motion: reduce){
+  header .shine,.ticker .track,.live,.cursor{animation:none}
+  main section{transition:none}
+  main section.pre{opacity:1;transform:none}
+  .arr .stem{animation:none !important}
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="inner">
+      <div class="shine"></div>
+      <div class="eyebrow">ETF Ecosystem · Field Guide</div>
+      <h1>ETF 小白圖解入門<span class="lite">投信、券商、客戶到底是誰？</span></h1>
+      <p class="promise">不需要任何金融背景。10 分鐘、四張圖，搞懂「誰是誰、在哪買、誰做的」。機制深讀與面試演練，請接著看《面試備戰手冊》。</p>
+    </div>
+  </div>
+</header>
+<div class="ticker" aria-hidden="true"><div class="live"></div><div class="track"><span>ETF GUIDE <b class='up'>▲</b></span><span class='sep'>·</span><span>投信 ISSUER</span><span class='sep'>·</span><span>券商 BROKER</span><span class='sep'>·</span><span>AP GATEWAY</span><span class='sep'>·</span><span>00981A <b class='up'>▲1.2%</b></span><span class='sep'>·</span><span>NAV 36.42 <b class='up'>▲0.31%</b></span><span class='sep'>·</span><span>MARKET OPEN</span><span class='sep'>·</span><span>FULL TRANSPARENCY</span><span class='sep'>·</span><span>ETF GUIDE <b class='up'>▲</b></span><span class='sep'>·</span><span>投信 ISSUER</span><span class='sep'>·</span><span>券商 BROKER</span><span class='sep'>·</span><span>AP GATEWAY</span><span class='sep'>·</span><span>00981A <b class='up'>▲1.2%</b></span><span class='sep'>·</span><span>NAV 36.42 <b class='up'>▲0.31%</b></span><span class='sep'>·</span><span>MARKET OPEN</span><span class='sep'>·</span><span>FULL TRANSPARENCY</span><span class='sep'>·</span></div></div>
+<canvas id="pulse" aria-hidden="true"></canvas>
+<div id="prog"></div>
+<button id="mode" aria-label="切換日夜模式">◐</button>
+
+<nav class="legend" aria-label="圖例">
+  <div class="wrap">
+    <span class="lab">圖例 LEGEND</span>
+    <span class="key money"><span class="swatch"></span>錢的流向</span>
+    <span class="key unit"><span class="swatch"></span>ETF 單位 / 商品</span>
+    <span class="key svc"><span class="swatch"></span>服務、資訊、監理</span>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ 圖1 ============ -->
+<section id="fig1">
+  <div class="fig-no">圖 1</div>
+  <h2>先分清楚三種公司</h2>
+  <p class="lede">新聞裡的「投信」「券商」「銀行」常常被混著講，但它們的角色完全不同。用食品業類比一次記住：</p>
+
+  <div class="trio">
+    <div class="co">
+      <div class="icon">廠</div>
+      <h3>投信</h3>
+      <div class="alias">Asset Manager / Issuer（發行人）</div>
+      <div class="ana">類比：<b>食品工廠</b>——設計並製造產品</div>
+      <ul>
+        <li>設計 ETF 產品、管理基金資產</li>
+        <li>0050 的「製造商」是元大投信</li>
+        <li>你面試的 ETF Platform 就在這裡</li>
+      </ul>
+    </div>
+    <div class="co broker">
+      <div class="icon">通</div>
+      <h3>券商</h3>
+      <div class="alias">Broker / Securities Firm</div>
+      <div class="ana">類比：<b>超市通路</b>——你買東西的地方</div>
+      <ul>
+        <li>提供下單 App，幫你把單送進交易所</li>
+        <li>賺手續費，不製造產品</li>
+        <li>少數券商兼任 AP 與做市商（後面會講）</li>
+      </ul>
+    </div>
+    <div class="co bank">
+      <div class="icon">庫</div>
+      <h3>保管銀行</h3>
+      <div class="alias">Custodian</div>
+      <div class="ana">類比：<b>獨立金庫</b>——資產不放工廠手上</div>
+      <ul>
+        <li>替基金保管股票與現金</li>
+        <li>投信下投資指令、銀行執行交割</li>
+        <li>監理設計：防止投信挪用資產</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="say"><b>白話一句：</b>投信「做」ETF，券商「賣」ETF（的交易服務），保管銀行「看管」ETF 裡面的資產。三者是分工，不是同一家公司的不同部門。</div>
+</section>
+
+<!-- ============ 圖2 ============ -->
+<section id="fig2">
+  <div class="fig-no">圖 2</div>
+  <h2>你買一張 ETF 時，發生了什麼事</h2>
+  <p class="lede">從「客戶」的視角開始。注意：這整條路上<b>沒有投信</b>——日常買賣根本不會經過工廠。</p>
+
+  <div class="canvas">
+    <div class="node you"><div class="nm">客戶（你）</div><div class="sub">Investor</div><div class="meta">打開券商 App，按下「買進 0050 一張」</div></div>
+    <div class="duo">
+      <div class="arr money"><span class="tag">付款＋手續費</span><div class="stem"></div><div class="head"></div></div>
+      <div class="arr up unit"><div class="head"></div><div class="stem"></div><span class="tag">ETF 入帳</span></div>
+    </div>
+    <div class="node"><div class="nm">券商</div><div class="sub">Broker</div><div class="meta">把你的委託單送進交易所撮合</div></div>
+    <div class="duo">
+      <div class="arr svc"><span class="tag">委託單</span><div class="stem"></div><div class="head"></div></div>
+      <div class="arr up svc"><div class="head"></div><div class="stem"></div><span class="tag">成交回報</span></div>
+    </div>
+    <div class="node"><div class="nm">證券交易所</div><div class="sub">Exchange (TWSE)</div><div class="meta">撮合你和「願意賣的人」——通常是另一位投資人或做市商</div></div>
+    <div class="cap">FIG 2 · 次級市場的日常交易：客戶 ⇄ 券商 ⇄ 交易所</div>
+  </div>
+
+  <div class="say"><b>白話一句：</b>你買 ETF 是跟「市場上的另一個人」買，不是跟投信買。就像你在超市買飲料，是超市賣你，不是飲料工廠賣你。</div>
+</section>
+
+<!-- ============ 圖3 ============ -->
+<section id="fig3">
+  <div class="fig-no">圖 3</div>
+  <h2>那 ETF 是誰「做」出來的？</h2>
+  <p class="lede">回到工廠端。一檔 ETF 誕生需要三方合作，這條就是你未來要管的 launch pipeline：</p>
+
+  <div class="canvas">
+    <div class="node gov"><div class="nm">指數公司</div><div class="sub">Index Provider（如 MSCI、富時、台灣指數公司）</div><div class="meta">擁有「配方」：指數的編製規則與成分股名單</div></div>
+    <div class="arr svc"><span class="tag">指數授權 Index Licensing（收授權費）</span><div class="stem"></div><div class="head"></div></div>
+    <div class="node factory"><div class="nm">投信（發行人）</div><div class="sub">Issuer</div><div class="meta">照配方設計 ETF：費用率、申贖規則、上市計畫</div></div>
+    <div class="arr svc"><span class="tag">申請募集核准 → 上市審查</span><div class="stem"></div><div class="head"></div></div>
+    <div class="node gov"><div class="nm">金管會 ＋ 證交所</div><div class="sub">Regulator + Exchange</div><div class="meta">主管機關點頭、交易所給代號，才能掛牌</div></div>
+    <div class="cap">FIG 3 · 產品誕生鏈：配方 → 工廠 → 核准上架</div>
+  </div>
+
+  <div class="say"><b>白話一句：</b>指數公司賣「食譜」，投信照食譜「開生產線」，金管會與交易所負責「核發營業執照和貨架」。</div>
+  <div class="warn"><b>你公司的主場：</b>主動式 ETF 不照食譜——經理人（主廚）自由選股，所以誕生鏈<b>沒有「指數授權」這一站</b>。完整比較與台灣規則，見手冊特別篇。</div>
+</section>
+
+<!-- ============ 圖4 ============ -->
+<section id="fig4">
+  <div class="fig-no">圖 4</div>
+  <h2>完整生態系地圖（點角色卡看白話解釋）</h2>
+  <p class="lede">把前三張圖合體，再加上你問的 <b>vendor</b>：投信不會什麼都自己做，會把專業工作外包給服務商——就像科技公司用雲端與 managed services。</p>
+
+  <div class="canvas">
+    <div class="layer">
+      <div class="layer-tag">第 1 層 · 客戶層</div>
+      <div class="roles">
+        <details class="role"><summary><span class="nm">散戶投資人</span><span class="sub">Retail Investor</span><span class="hint">點我看白話 ▾</span></summary><div class="body">就是一般人，<b>用券商 App 在次級市場買賣</b>。永遠不會直接接觸投信的申贖系統。</div></details>
+        <details class="role"><summary><span class="nm">機構投資人</span><span class="sub">Institutional</span><span class="hint">點我看白話 ▾</span></summary><div class="body">壽險、退休基金等大戶。買賣量大，常透過 CapM 團隊詢價，<b>這就是 JD 第三支柱服務的對象之一</b>。</div></details>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-tag">第 2 層 · 交易層（次級市場）</div>
+      <div class="roles">
+        <details class="role"><summary><span class="nm">券商</span><span class="sub">Broker</span><span class="hint">點我看白話 ▾</span></summary><div class="body">客戶的下單通路，<b>賺手續費</b>。對投信來說是「銷售末端」，但沒有合約上的上下游關係。</div></details>
+        <details class="role"><summary><span class="nm">交易所</span><span class="sub">Exchange</span><span class="hint">點我看白話 ▾</span></summary><div class="body">撮合買賣的市場本體，也負責<b>上市審查與監督做市商報價義務</b>。</div></details>
+        <details class="role"><summary><span class="nm">做市商</span><span class="sub">Market Maker / LP</span><span class="hint">點我看白話 ▾</span></summary><div class="body">隨時掛出買價與賣價，<b>讓你想買有人賣、想賣有人買</b>。沒有他們，冷門 ETF 會「掛單沒人理」。</div></details>
+        <details class="role"><summary><span class="nm">參與券商 AP</span><span class="sub">Authorized Participant</span><span class="hint">點我看白話 ▾</span></summary><div class="body">少數和投信簽約的券商，<b>唯一能向工廠「批貨/退貨」的角色</b>（申購買回 ETF 單位）。是連接兩個市場的橋。</div></details>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-tag">第 3 層 · 發行層</div>
+      <div class="roles">
+        <details class="role"><summary><span class="nm">投信（發行人）</span><span class="sub">Issuer · 你的雇主</span><span class="hint">點我看白話 ▾</span></summary><div class="body">產品的 owner：設計、發行、管理 ETF，每天發布 PCF、對 NAV 品質負最終責任。<b>你的 ETF Platform 團隊就在這裡當 PM／治理中樞</b>。</div></details>
+        <details class="role"><summary><span class="nm">指數公司</span><span class="sub">Index Provider</span><span class="hint">點我看白話 ▾</span></summary><div class="body">指數的智財權所有者。對投信是 <b>vendor 兼上游依賴</b>：成分股調整檔案晚到，下游全部卡住。</div></details>
+        <details class="role"><summary><span class="nm">主管機關</span><span class="sub">FSC 金管會</span><span class="hint">點我看白話 ▾</span></summary><div class="body">核准募集、訂遊戲規則。對你的意義：<b>launch 時程裡最不可壓縮的依賴項</b>。</div></details>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-tag">第 4 層 · Vendor 層（投信的外包服務商）</div>
+      <div class="roles">
+        <details class="role"><summary><span class="nm">保管銀行</span><span class="sub">Custodian</span><span class="hint">點我看白話 ▾</span></summary><div class="body">保管基金資產、執行交割。類比：<b>資產的獨立金庫＋結算代理</b>。法規強制使用，確保投信碰不到客戶的錢。</div></details>
+        <details class="role"><summary><span class="nm">基金會計</span><span class="sub">Fund Accountant</span><span class="hint">點我看白話 ▾</span></summary><div class="body">每天收盤後<b>算出 NAV</b>（基金每單位值多少錢）。常由保管銀行兼任。類比：每日跑 batch job 產出 ground truth 的團隊。</div></details>
+        <details class="role"><summary><span class="nm">過戶代理</span><span class="sub">Transfer Agent</span><span class="hint">點我看白話 ▾</span></summary><div class="body">記錄「誰持有多少單位」的名冊，申贖後更新總單位數。類比：<b>使用者資料庫的 DBA</b>。</div></details>
+        <details class="role"><summary><span class="nm">系統／資料商</span><span class="sub">Tech & Data Vendors</span><span class="hint">點我看白話 ▾</span></summary><div class="body">PCF 產製系統、iNAV 計算、市場資料（如 Bloomberg）。<b>JD 說的「營運與技術優化專案」大量是在管理這些 vendor 與系統</b>。</div></details>
+      </div>
+    </div>
+    <div class="cap">FIG 4 · 四層生態系：客戶 → 交易 → 發行 → Vendor</div>
+  </div>
+
+  <div class="say"><b>白話一句：</b>「vendor」就是投信的外包商。投信像 product owner，把保管、會計、名冊、系統都交給專業服務商，自己專注在產品與治理——你的工作就是確保這整條供應鏈每天準時轉動。</div>
+</section>
+
+<!-- ============ 名詞卡 ============ -->
+<section id="chips">
+  <div class="fig-no">速記</div>
+  <h2>十秒名詞卡</h2>
+  <div class="chips">
+    <span class="chip"><b>投信</b>＝做 ETF 的工廠</span>
+    <span class="chip"><b>券商</b>＝下單通路（超市）</span>
+    <span class="chip"><b>AP</b>＝能去工廠批貨的特許券商</span>
+    <span class="chip"><b>做市商</b>＝超市裡永遠掛價的攤商</span>
+    <span class="chip"><b>保管銀行</b>＝資產的獨立金庫</span>
+    <span class="chip"><b>基金會計</b>＝每天算 NAV 的人</span>
+    <span class="chip"><b>過戶代理</b>＝持有人名冊的 DBA</span>
+    <span class="chip"><b>指數公司</b>＝賣食譜的</span>
+    <span class="chip"><b>PCF</b>＝今日批貨清單</span>
+    <span class="chip"><b>NAV</b>＝真實價值（每日 batch 產出）</span>
+    <span class="chip"><b>市價</b>＝超市即時標價</span>
+    <span class="chip"><b>折溢價</b>＝標價偏離真實價值的程度</span>
+    <span class="chip"><b>Vendor</b>＝投信的外包服務商</span>
+    <span class="chip"><b>主動式 ETF</b>＝主廚自由發揮的 ETF（你公司的主場）</span>
+    <span class="chip"><b>Alpha</b>＝贏過基準的超額報酬</span>
+    <span class="chip"><b>全透明</b>＝台灣主動式 ETF 每天攤開全部持股</span>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="seal">ETF 小白圖解入門</div>
+  入門到此！兩個市場、申贖機制、套利、指標、上市流程、主動式專章與面試 Q&A 都在手冊裡。
+  <div style="margin-top:18px"><a class="gobtn" href="handbook.html">前往《面試備戰手冊》 →</a></div>
+</footer>
+
+
+<script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var secs = [].slice.call(document.querySelectorAll('main section'));
+  var bar = document.getElementById('prog');
+  function prog(){ var h=document.documentElement; var m=h.scrollHeight-h.clientHeight; if(bar) bar.style.width=(m>0?(h.scrollTop/m*100):0)+'%'; }
+  window.addEventListener('scroll', prog, {passive:true}); prog();
+
+  var modeBtn = document.getElementById('mode');
+  if(modeBtn) modeBtn.addEventListener('click', function(){
+    var r = document.documentElement;
+    r.dataset.theme = (r.dataset.theme === 'dark') ? '' : 'dark';
+    modeBtn.textContent = (r.dataset.theme === 'dark') ? '☀' : '◐';
+  });
+
+  var eb = document.querySelector('.eyebrow');
+  if(eb && !rm){
+    var full = eb.textContent;
+    eb.textContent='';
+    var typed=document.createElement('span'), cur=document.createElement('span');
+    cur.className='cursor'; cur.textContent='▌';
+    eb.appendChild(typed); eb.appendChild(cur);
+    var ti=0;(function tick(){ if(ti<=full.length){ typed.textContent=full.slice(0,ti); ti++; setTimeout(tick,38);} })();
+  }
+
+  var cv = document.getElementById('pulse');
+  if(cv && cv.getContext){
+    var dpr = window.devicePixelRatio||1, cx = cv.getContext('2d'), W, H, data=[], t=0, N=160;
+    function size(){ W=cv.clientWidth*dpr; H=64*dpr; cv.width=W; cv.height=H; }
+    size(); window.addEventListener('resize', size);
+    for(var i=0;i<N;i++) data.push(Math.sin(i/9)*8);
+    function draw(){
+      cx.clearRect(0,0,W,H);
+      cx.strokeStyle='rgba(70,97,138,.35)'; cx.lineWidth=1;
+      var gap=26*dpr, off=(t*0.8*dpr)%gap;
+      for(var x=W-off; x>0; x-=gap){ cx.beginPath(); cx.moveTo(x,0); cx.lineTo(x,H); cx.stroke(); }
+      cx.beginPath(); cx.moveTo(0,H/2); cx.lineTo(W,H/2); cx.stroke();
+      cx.beginPath();
+      for(var j=0;j<N;j++){ var px=j/(N-1)*W, py=H/2 - data[j]*dpr*1.6; if(j)cx.lineTo(px,py); else cx.moveTo(px,py); }
+      cx.strokeStyle='#D4AF5E'; cx.lineWidth=1.6*dpr; cx.shadowColor='rgba(212,175,94,.7)'; cx.shadowBlur=6*dpr; cx.stroke(); cx.shadowBlur=0;
+      var ly=H/2 - data[N-1]*dpr*1.6;
+      cx.beginPath(); cx.arc(W-2*dpr, ly, 3*dpr, 0, 7); cx.fillStyle='#5BC489'; cx.fill();
+    }
+    if(rm || !window.requestAnimationFrame){ draw(); }
+    else (function loop(){
+      t++;
+      if(t%2===0){ var last=data[N-1], nv=last+(Math.random()-0.485)*5; nv=Math.max(-17,Math.min(17,nv)); data.push(nv); data.shift(); }
+      draw(); requestAnimationFrame(loop);
+    })();
+  }
+
+  if (rm || !('IntersectionObserver' in window)) return;
+  secs.forEach(function(x){ x.classList.add('pre'); });
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.intersectionRatio >= 0.1) e.target.classList.remove('pre');
+      else if (!e.isIntersecting) e.target.classList.add('pre');
+    });
+  }, {threshold: [0, 0.1]});
+  secs.forEach(function(x){ io.observe(x); });
+  setTimeout(function(){
+    var alive = secs.some(function(x){ return !x.classList.contains('pre'); });
+    if(!alive){ secs.forEach(function(x){ x.classList.remove('pre'); }); io.disconnect(); }
+  }, 1500);
+})();
+</script>
+</body>
+</html>
